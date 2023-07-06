@@ -22,6 +22,28 @@
         #menu ul:hover {
             transform: translateY(-20px);
         }
+
+        #menu ul li {
+            transition: font-size 0.2s ease;
+        }
+
+        #menu ul li:hover {
+            animation: rainbowAnimation 3s linear infinite;
+            background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 4rem;
+        }
+
+        @keyframes rainbowAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -37,7 +59,7 @@
     <script>
         var menu = document.getElementById("menu");
         var hovering = false;
-        var scrollMultiplier = 4.20;
+        var timeoutId;
 
         menu.addEventListener("mouseenter", function() {
             hovering = true;
@@ -47,6 +69,7 @@
         menu.addEventListener("mouseleave", function() {
             hovering = false;
             menu.style.display = "none";
+            clearTimeout(timeoutId);
         });
 
         menu.addEventListener("click", function(event) {
@@ -65,7 +88,7 @@
 
                 var delta = (menuCenterY - mouseY) / 5; // Adjust the division factor to change the base scroll distance
 
-                var scrollDistance = delta * scrollMultiplier;
+                var scrollDistance = delta * 4;
                 menu.querySelector("ul").style.transform = "translateY(" + scrollDistance + "px)";
             }
         });
@@ -77,11 +100,10 @@
                 menu.style.left = posX + "px";
                 menu.style.top = posY + "px";
                 menu.style.display = "block";
-                setTimeout(function() {
-                    if (!hovering) {
-                        menu.style.display = "none";
-                    }
-                }, 3500);  // Hide the menu after 3.5 seconds if not hovering
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function() {
+                    menu.style.display = "none";
+                }, 3000);  // Hide the menu after 1 second if no click occurs
             }
         });
     </script>
