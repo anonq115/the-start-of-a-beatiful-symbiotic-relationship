@@ -10,6 +10,7 @@
             transform: translate(-50%, -50%);
             overflow-y: scroll;
             max-height: 200px;
+            user-select: none; /* Disable text selection */
         }
 
         #menu ul {
@@ -17,6 +18,7 @@
             padding: 0;
             list-style: none;
             transition: transform 0.2s ease;
+            user-select: none; /* Disable text selection */
         }
 
         #menu ul:hover {
@@ -33,6 +35,7 @@
             padding-right: 20px; /* Add space to the right */
             box-sizing: border-box; /* Include padding in the width */
             text-decoration: none;
+            user-select: none; /* Disable text selection */
         }
 
         #menu ul li:hover {
@@ -52,22 +55,45 @@
                 background-position: 100% 50%;
             }
         }
+
+        #blue-box {
+            display: none;
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background-color: blue;
+            animation: swipeRight 0.3s linear forwards;
+        }
+
+        @keyframes swipeRight {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
     </style>
 </head>
 <body>
     <div id="menu">
         <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Tickets</a></li>
-            <li><a href="#">Shop</a></li>
-            <li><a href="#">Prints</a></li>
+            <li><a href="#" draggable="false">Home</a></li>
+            <li><a href="#" draggable="false">Tickets</a></li>
+            <li><a href="#" draggable="false">Shop</a></li>
+            <li><a href="#" draggable="false">Prints</a></li>
         </ul>
     </div>
+
+    <div id="blue-box"></div>
 
     <script>
         var menu = document.getElementById("menu");
         var hovering = false;
         var timer;
+        var holdTimer;
+        var clickedMenuItem;
+        var blueBox = document.getElementById("blue-box");
 
         menu.addEventListener("mouseenter", function() {
             hovering = true;
@@ -98,16 +124,41 @@
 
                 var delta = (menuCenterY - mouseY) / 5; // Adjust the division factor to change the base scroll distance
 
-                var scrollDistance = delta * 5.3;
+                var scrollDistance = delta * 4;
                 menu.querySelector("ul").style.transform = "translateY(" + scrollDistance + "px)";
                 resetTimer();
             }
+        });
+
+        document.addEventListener("mousedown", function(event) {
+            if (event.button === 0 && !hovering) {
+                holdTimer = setTimeout(function() {
+                    var posX = event.clientX;
+                    var posY = event.clientY;
+                    menu.style.left = posX + "px";
+                    menu.style.top = posY + "px";
+                    menu.style.display = "block";
+                    resetTimer();
+                }, 300); // Show the menu after 0.3 seconds of holding down the left click
+
+                showBlueBox(event.clientX, event.clientY);
+            }
+        });
+
+        document.addEventListener("mouseup", function(event) {
+            clearTimeout(holdTimer);
+            if (clickedMenuItem) {
+                clickedMenuItem.click();
+                clickedMenuItem = null;
+            }
+            hideBlueBox();
         });
 
         function resetTimer() {
             clearTimeout(timer);
             timer = setTimeout(function() {
                 menu.style.display = "none";
+                hideBlueBox();
             }, 3000); // Hide the menu after 3.0 seconds of inactivity
         }
 
@@ -121,6 +172,22 @@
                 resetTimer();
             }
         });
+
+        menu.querySelectorAll("ul li a").forEach(function(item) {
+            item.addEventListener("mouseenter", function() {
+                clickedMenuItem = item;
+            });
+        });
+
+        function showBlueBox(x, y) {
+            blueBox.style.left = x + "px";
+            blueBox.style.top = y + "px";
+            blueBox.style.display = "block";
+        }
+
+        function hideBlueBox() {
+            blueBox.style.display = "none";
+        }
     </script>
 </body>
 </html>
