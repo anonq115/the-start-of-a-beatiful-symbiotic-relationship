@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #menu {
+            display: none;
+            position: absolute;
+            background-color: lightgray;
+            padding: 10px;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div id="menu">
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Tickets</a></li>
+            <li><a href="#">Shop</a></li>
+            <li><a href="#">Prints</a></li>
+        </ul>
+    </div>
+
+    <script>
+        var menu = document.getElementById("menu");
+        var hovering = false;
+
+        menu.addEventListener("mouseenter", function() {
+            hovering = true;
+            menu.style.display = "block";
+        });
+
+        menu.addEventListener("mouseleave", function() {
+            hovering = false;
+            menu.style.display = "none";
+        });
+
+        menu.addEventListener("click", function(event) {
+            event.stopPropagation(); // Prevent click event propagation to document
+
+            if (event.target.tagName === "A") {
+                menu.style.display = "none"; // Hide menu when a link is clicked
+            }
+        });
+
+        document.addEventListener("click", function(event) {
+            if (event.button === 0 && !hovering) {  // Only display menu if not hovering
+                var posX = event.clientX;
+                var posY = event.clientY;
+                menu.style.left = posX + "px";
+                menu.style.top = posY + "px";
+                menu.style.display = "block";
+                setTimeout(function() {
+                    if (!hovering) {
+                        menu.style.display = "none";
+                    }
+                }, 3500);  // Hide the menu after 3.5 seconds if not hovering
+            }
+        });
+    </script>
+</body>
+</html>
