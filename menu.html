@@ -27,13 +27,21 @@
             transition: font-size 0.2s ease;
         }
 
+        #menu ul li a {
+            display: block;
+            width: 100%;
+            padding-right: 20px; /* Add space to the right */
+            box-sizing: border-box; /* Include padding in the width */
+            text-decoration: none;
+        }
+
         #menu ul li:hover {
             animation: rainbowAnimation 3s linear infinite;
             background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
             background-size: 200% 100%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 4rem;
+            font-size: 1.4rem;
         }
 
         @keyframes rainbowAnimation {
@@ -59,17 +67,17 @@
     <script>
         var menu = document.getElementById("menu");
         var hovering = false;
-        var timeoutId;
+        var timer;
 
         menu.addEventListener("mouseenter", function() {
             hovering = true;
             menu.style.display = "block";
+            resetTimer();
         });
 
         menu.addEventListener("mouseleave", function() {
             hovering = false;
             menu.style.display = "none";
-            clearTimeout(timeoutId);
         });
 
         menu.addEventListener("click", function(event) {
@@ -78,6 +86,8 @@
             if (event.target.tagName === "A") {
                 menu.style.display = "none"; // Hide menu when a link is clicked
             }
+
+            resetTimer();
         });
 
         document.addEventListener("mousemove", function(event) {
@@ -88,10 +98,18 @@
 
                 var delta = (menuCenterY - mouseY) / 5; // Adjust the division factor to change the base scroll distance
 
-                var scrollDistance = delta * 4;
+                var scrollDistance = delta * 5.3;
                 menu.querySelector("ul").style.transform = "translateY(" + scrollDistance + "px)";
+                resetTimer();
             }
         });
+
+        function resetTimer() {
+            clearTimeout(timer);
+            timer = setTimeout(function() {
+                menu.style.display = "none";
+            }, 3000); // Hide the menu after 3.0 seconds of inactivity
+        }
 
         document.addEventListener("click", function(event) {
             if (event.button === 0 && !hovering) {  // Only display menu if not hovering
@@ -100,10 +118,7 @@
                 menu.style.left = posX + "px";
                 menu.style.top = posY + "px";
                 menu.style.display = "block";
-                clearTimeout(timeoutId);
-                timeoutId = setTimeout(function() {
-                    menu.style.display = "none";
-                }, 3000);  // Hide the menu after 1 second if no click occurs
+                resetTimer();
             }
         });
     </script>
